@@ -6,15 +6,25 @@ from django.contrib.auth.models import User
 class Movie(models.Model):
     name=models.CharField(max_length=100)
     genre=models.CharField(max_length=50)
+    release_date=models.DateField(null=True)
 
 
     def __str__(self):
         return self.name
 
 
+class Cinema(models.Model):
+    name=models.CharField(max_length=100)
+    location=models.CharField(max_length=100)
+
+
+    def __str__(self):
+        return f"{self.name} - {self.location}"
+
+
 class CinemaHall(models.Model):
     name=models.CharField(max_length=100)
-    location=models.CharField(max_length=50)
+    cinema=models.ForeignKey(Cinema,on_delete=models.PROTECT)
 
 
     def __str__(self):
