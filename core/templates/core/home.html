@@ -1,8 +1,159 @@
-<h1>HomePage</h1>
 
-{% for movie in movies %}
-    {{ movie.name}}
-    {{ movie.genre }}
-    {{ movie.release_date }}
-    <hr/>
-{% endfor %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Cinema Reservation - Movies</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-950 text-white min-h-screen">
+
+    <!-- Navbar -->
+    <nav class="bg-gray-900 border-b border-gray-800">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+
+            <h1 class="text-2xl font-bold text-red-500">
+                CinemaReserve
+            </h1>
+
+            <div class="flex gap-6 text-gray-300">
+                <a href="#" class="hover:text-red-500 transition">
+                    Home
+                </a>
+
+                <a href="#" class="hover:text-red-500 transition">
+                    Movies
+                </a>
+
+                <a href="#" class="hover:text-red-500 transition">
+                    Login
+                </a>
+            </div>
+
+        </div>
+    </nav>
+
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-6 py-10">
+
+        <!-- Page Heading -->
+        <div class="mb-10">
+            <h2 class="text-4xl font-bold mb-2">
+                Now Showing
+            </h2>
+
+            <p class="text-gray-400">
+                Choose a movie and reserve your tickets.
+            </p>
+        </div>
+
+
+        <!-- Movie Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+
+            {% for movie in movies %}
+
+            <div class="bg-gray-900 rounded-xl overflow-hidden shadow-lg
+                        border border-gray-800
+                        hover:border-red-500
+                        hover:-translate-y-1
+                        transition duration-300">
+
+                <!-- Movie Image Placeholder -->
+                <div class="h-64 bg-gray-800 flex items-center justify-center">
+
+                    {% if movie.poster %}
+                        <img
+                            src="{{ movie.poster.url }}"
+                            alt="{{ movie.name }}"
+                            class="w-full h-full object-cover"
+                        >
+                    {% else %}
+                        <div class="text-gray-500 text-center">
+                            <span class="text-5xl">🎬</span>
+                            <p class="mt-2">No Poster</p>
+                        </div>
+                    {% endif %}
+
+                </div>
+
+
+                <!-- Movie Information -->
+                <div class="p-5">
+
+                    <h3 class="text-xl font-bold mb-2">
+                        {{ movie.name }}
+                    </h3>
+
+                    <div class="flex items-center justify-between mb-3">
+
+                        <span class="bg-red-600/20 text-red-400
+                                     px-3 py-1 rounded-full text-sm">
+                            {{ movie.genre }}
+                        </span>
+
+                        <span class="text-gray-400 text-sm">
+                            {{ movie.release_date }}
+                        </span>
+
+                    </div>
+
+
+                    <!-- Reserve Button -->
+                    <a
+                        href="#"
+                        class="block w-full text-center
+                               bg-red-600 hover:bg-red-700
+                               text-white font-semibold
+                               py-2.5 rounded-lg
+                               transition duration-200"
+                    >
+                        Reserve Ticket
+                    </a>
+
+                </div>
+
+            </div>
+
+            {% empty %}
+
+                <!-- No Movies -->
+                <div class="col-span-full text-center py-20">
+
+                    <div class="text-6xl mb-4">
+                        🎬
+                    </div>
+
+                    <h3 class="text-2xl font-semibold mb-2">
+                        No Movies Available
+                    </h3>
+
+                    <p class="text-gray-400">
+                        There are currently no movies showing.
+                    </p>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </main>
+
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-800 mt-16">
+        <div class="max-w-7xl mx-auto px-6 py-6 text-center text-gray-500">
+            © 2026 CinemaReserve. All rights reserved.
+        </div>
+    </footer>
+
+</body>
+</html>
+
