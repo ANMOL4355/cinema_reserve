@@ -1,0 +1,8 @@
+<h1>HomePage</h1>
+
+{% for movie in movies %}
+    {{ movie.name}}
+    {{ movie.genre }}
+    {{ movie.release_date }}
+    <hr/>
+{% endfor %}
