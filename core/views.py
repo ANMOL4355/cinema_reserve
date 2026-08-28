@@ -10,3 +10,12 @@ def home(request):
    }
 
    return render(request,"core/home.html",context)
+
+
+def movie_detail(request,pk):
+   movie=Movie.objects.get(pk=pk)
+   context={
+      'movie':movie
+   }
+   return render(request,"core/movie_detail.html",context)
+ 
