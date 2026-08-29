@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Movie
+from .models import Movie,Show
 # Create your views here.
 def home(request):
    
@@ -14,8 +14,12 @@ def home(request):
 
 def movie_detail(request,pk):
    movie=Movie.objects.get(pk=pk)
+   shows=Show.objects.filter(movie=movie)
+   #print(shows)
+
    context={
-      'movie':movie
+      'movie':movie,
+      'shows':shows
    }
    return render(request,"core/movie_detail.html",context)
  

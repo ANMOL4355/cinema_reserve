@@ -98,38 +98,43 @@
       <div class="mb-5">
         <p class="text-gray-500 text-sm mb-1">Cinema</p>
 
-        <h3 class="text-xl font-semibold">{{ show.cinema }}</h3>
+        <h3 class="text-xl font-semibold">{{ show.cinemahall.cinema.name }}</h3>
       </div>
 
       <!-- Hall -->
       <div class="mb-5">
         <p class="text-gray-500 text-sm mb-1">Hall</p>
 
-        <p class="text-gray-300">{{ show.cinema_hall }}</p>
+        <p class="text-gray-300">{{ show.cinemahall }}</p>
       </div>
 
       <!-- Showtime -->
       <div class="mb-6">
-        <p class="text-gray-500 text-sm mb-2">Showtime</p>
+        <p class="text-gray-500 text-sm mb-2">Date</p>
 
         <div class="flex items-center gap-3">
           <div class="bg-gray-800 rounded-lg px-4 py-3">
-            <p class="text-gray-400 text-xs">Start</p>
-
-            <p class="text-lg font-semibold text-white">
-              {{ show.start_time }}
-            </p>
+              {{ show.show_time|date:"Y-m-d" }}
           </div>
+        </div>
+        <br/>
+        <p class="text-gray-500 text-sm mb-2">Time</p>
 
-          <span class="text-gray-600"> → </span>
-
+        <div class="flex items-center gap-3">
           <div class="bg-gray-800 rounded-lg px-4 py-3">
-            <p class="text-gray-400 text-xs">End</p>
+              {{ show.show_time|time:"g:i A" }}
+          </div>
+        </div>
+        <br/>
+        <p class="text-gray-500 text-sm mb-2">Price</p>
 
-            <p class="text-lg font-semibold text-white">{{ show.end_time }}</p>
+        <div class="flex items-center gap-3">
+          <div class="bg-gray-800 rounded-lg px-4 py-3">
+              Rs.{{ show.price }}
           </div>
         </div>
       </div>
+
 
       <!-- Reserve Button -->
       <a
