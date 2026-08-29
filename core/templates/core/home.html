@@ -1,36 +1,7 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+{% extends "core/base.html" %}
 
-    <title>Cinema Reservation - Movies</title>
-
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-  </head>
-
-  <body class="bg-gray-950 text-white min-h-screen">
-    <!-- Navbar -->
-    <nav class="bg-gray-900 border-b border-gray-800">
-      <div
-        class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between"
-      >
-        <h1 class="text-2xl font-bold text-red-500">CinemaReserve</h1>
-
-        <div class="flex gap-6 text-gray-300">
-          <a href="#" class="hover:text-red-500 transition"> Home </a>
-
-          <a href="#" class="hover:text-red-500 transition"> Movies </a>
-
-          <a href="#" class="hover:text-red-500 transition"> Login </a>
-        </div>
-      </div>
-    </nav>
-
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-6 py-10">
-      <!-- Page Heading -->
+{% block main_content %}
+        <!-- Page Heading -->
       <div class="mb-10">
         <h2 class="text-4xl font-bold mb-2">Now Showing</h2>
 
@@ -101,13 +72,4 @@
 
         {% endfor %}
       </div>
-    </main>
-
-    <!-- Footer -->
-    <footer class="border-t border-gray-800 mt-16">
-      <div class="max-w-7xl mx-auto px-6 py-6 text-center text-gray-500">
-        © 2026 CinemaReserve. All rights reserved.
-      </div>
-    </footer>
-  </body>
-</html>
+ {% endblock main_content %}

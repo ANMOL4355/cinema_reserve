@@ -1,318 +1,162 @@
+{% extends "core/base.html" %} {% block main_content %}
+<!-- Back Button -->
+<div class="mb-8">
+  <a
+    href="{% url 'back' %}"
+    class="inline-flex items-center gap-2 text-gray-400 hover:text-white transition"
+  >
+    <span>←</span>
+    Back to Movies
+  </a>
+</div>
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <title>{{ movie.name }} - Cinema Reservation</title>
-
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-  </head>
-
-  <body class="bg-gray-950 text-white min-h-screen">
-
-    <!-- Navbar -->
-    <nav class="bg-gray-900 border-b border-gray-800">
+<!-- Movie Details -->
+<section
+  class="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden shadow-xl"
+>
+  <div class="grid grid-cols-1 md:grid-cols-3">
+    <!-- Movie Poster -->
+    <div class="h-96 md:h-full min-h-[450px] bg-gray-800">
+      {% if movie.poster %}
+      <img
+        src="{{ movie.poster.url }}"
+        alt="{{ movie.name }}"
+        class="w-full h-full object-cover"
+      />
+      {% else %}
       <div
-        class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between"
+        class="w-full h-full flex flex-col items-center justify-center text-gray-500"
       >
-        <!-- Logo -->
-        <a href="#" class="text-2xl font-bold text-red-500">
-          CinemaReserve
-        </a>
+        <span class="text-7xl">🎬</span>
 
-        <!-- Navigation -->
-        <div class="flex gap-6 text-gray-300">
-          <a href="#" class="hover:text-red-500 transition">
-            Home
-          </a>
-
-          <a href="#" class="text-red-500 font-medium">
-            Movies
-          </a>
-
-          <a href="#" class="hover:text-red-500 transition">
-            Login
-          </a>
-        </div>
+        <p class="mt-4 text-lg">No Poster Available</p>
       </div>
-    </nav>
+      {% endif %}
+    </div>
 
-
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-6 py-10">
-
-      <!-- Back Button -->
-      <div class="mb-8">
-        <a
-          href="{% url 'back' %}"
-          class="inline-flex items-center gap-2 text-gray-400
-                 hover:text-white transition"
+    <!-- Movie Information -->
+    <div class="md:col-span-2 p-8 md:p-10 flex flex-col justify-center">
+      <!-- Genre -->
+      <div class="mb-4">
+        <span
+          class="inline-block bg-red-600/20 text-red-400 px-4 py-1.5 rounded-full text-sm font-medium"
         >
-          <span>←</span>
-          Back to Movies
-        </a>
+          {{ movie.genre }}
+        </span>
       </div>
 
+      <!-- Movie Name -->
+      <h1 class="text-4xl md:text-5xl font-bold mb-6">{{ movie.name }}</h1>
 
-      <!-- Movie Details -->
-      <section
-        class="bg-gray-900 border border-gray-800
-               rounded-2xl overflow-hidden shadow-xl"
-      >
+      <!-- Release Date -->
+      <div class="mb-8">
+        <p class="text-gray-400 text-sm mb-1">Release Date</p>
 
-        <div class="grid grid-cols-1 md:grid-cols-3">
+        <p class="text-lg font-medium">{{ movie.release_date }}</p>
+      </div>
 
-          <!-- Movie Poster -->
-          <div class="h-96 md:h-full min-h-[450px] bg-gray-800">
+      <!-- Description -->
+      {% if movie.description %}
+      <div class="mb-8">
+        <h2 class="text-xl font-semibold mb-2">About the Movie</h2>
 
-            {% if movie.poster %}
-              <img
-                src="{{ movie.poster.url }}"
-                alt="{{ movie.name }}"
-                class="w-full h-full object-cover"
-              />
-            {% else %}
-              <div
-                class="w-full h-full flex flex-col
-                       items-center justify-center text-gray-500"
-              >
-                <span class="text-7xl">🎬</span>
+        <p class="text-gray-400 leading-relaxed">{{ movie.description }}</p>
+      </div>
+      {% endif %}
 
-                <p class="mt-4 text-lg">
-                  No Poster Available
-                </p>
-              </div>
-            {% endif %}
+      <!-- Show Count -->
+      <div>
+        <p class="text-gray-400">
+          Available Shows:
+          <span class="text-white font-semibold"> {{ shows|length }} </span>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
 
-          </div>
+<!-- Shows Section -->
+<section class="mt-12">
+  <!-- Section Heading -->
+  <div class="mb-8">
+    <h2 class="text-3xl font-bold mb-2">Available Shows</h2>
 
+    <p class="text-gray-400">Select a showtime to reserve your seats.</p>
+  </div>
 
-          <!-- Movie Information -->
-          <div class="md:col-span-2 p-8 md:p-10 flex flex-col justify-center">
+  <!-- Shows -->
+  {% if shows %}
 
-            <!-- Genre -->
-            <div class="mb-4">
-              <span
-                class="inline-block bg-red-600/20 text-red-400
-                       px-4 py-1.5 rounded-full text-sm font-medium"
-              >
-                {{ movie.genre }}
-              </span>
-            </div>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for show in shows %}
 
+    <!-- Show Card -->
+    <div
+      class="bg-gray-900 border border-gray-800 rounded-xl p-6 hover:border-red-500 transition duration-300"
+    >
+      <!-- Cinema -->
+      <div class="mb-5">
+        <p class="text-gray-500 text-sm mb-1">Cinema</p>
 
-            <!-- Movie Name -->
-            <h1 class="text-4xl md:text-5xl font-bold mb-6">
-              {{ movie.name }}
-            </h1>
+        <h3 class="text-xl font-semibold">{{ show.cinema }}</h3>
+      </div>
 
+      <!-- Hall -->
+      <div class="mb-5">
+        <p class="text-gray-500 text-sm mb-1">Hall</p>
 
-            <!-- Release Date -->
-            <div class="mb-8">
-              <p class="text-gray-400 text-sm mb-1">
-                Release Date
-              </p>
+        <p class="text-gray-300">{{ show.cinema_hall }}</p>
+      </div>
 
-              <p class="text-lg font-medium">
-                {{ movie.release_date }}
-              </p>
-            </div>
+      <!-- Showtime -->
+      <div class="mb-6">
+        <p class="text-gray-500 text-sm mb-2">Showtime</p>
 
+        <div class="flex items-center gap-3">
+          <div class="bg-gray-800 rounded-lg px-4 py-3">
+            <p class="text-gray-400 text-xs">Start</p>
 
-            <!-- Description -->
-            {% if movie.description %}
-              <div class="mb-8">
-                <h2 class="text-xl font-semibold mb-2">
-                  About the Movie
-                </h2>
-
-                <p class="text-gray-400 leading-relaxed">
-                  {{ movie.description }}
-                </p>
-              </div>
-            {% endif %}
-
-
-            <!-- Show Count -->
-            <div>
-              <p class="text-gray-400">
-                Available Shows:
-                <span class="text-white font-semibold">
-                  {{ shows|length }}
-                </span>
-              </p>
-            </div>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- Shows Section -->
-      <section class="mt-12">
-
-        <!-- Section Heading -->
-        <div class="mb-8">
-          <h2 class="text-3xl font-bold mb-2">
-            Available Shows
-          </h2>
-
-          <p class="text-gray-400">
-            Select a showtime to reserve your seats.
-          </p>
-        </div>
-
-
-        <!-- Shows -->
-        {% if shows %}
-
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-            {% for show in shows %}
-
-              <!-- Show Card -->
-              <div
-                class="bg-gray-900 border border-gray-800
-                       rounded-xl p-6
-                       hover:border-red-500
-                       transition duration-300"
-              >
-
-                <!-- Cinema -->
-                <div class="mb-5">
-
-                  <p class="text-gray-500 text-sm mb-1">
-                    Cinema
-                  </p>
-
-                  <h3 class="text-xl font-semibold">
-                    {{ show.cinema }}
-                  </h3>
-
-                </div>
-
-
-                <!-- Hall -->
-                <div class="mb-5">
-
-                  <p class="text-gray-500 text-sm mb-1">
-                    Hall
-                  </p>
-
-                  <p class="text-gray-300">
-                    {{ show.cinema_hall }}
-                  </p>
-
-                </div>
-
-
-                <!-- Showtime -->
-                <div class="mb-6">
-
-                  <p class="text-gray-500 text-sm mb-2">
-                    Showtime
-                  </p>
-
-                  <div class="flex items-center gap-3">
-
-                    <div
-                      class="bg-gray-800 rounded-lg
-                             px-4 py-3"
-                    >
-                      <p class="text-gray-400 text-xs">
-                        Start
-                      </p>
-
-                      <p class="text-lg font-semibold text-white">
-                        {{ show.start_time }}
-                      </p>
-                    </div>
-
-
-                    <span class="text-gray-600">
-                      →
-                    </span>
-
-
-                    <div
-                      class="bg-gray-800 rounded-lg
-                             px-4 py-3"
-                    >
-                      <p class="text-gray-400 text-xs">
-                        End
-                      </p>
-
-                      <p class="text-lg font-semibold text-white">
-                        {{ show.end_time }}
-                      </p>
-                    </div>
-
-                  </div>
-
-                </div>
-
-
-                <!-- Reserve Button -->
-                <a
-                  href="#"
-                  class="block w-full text-center
-                         bg-red-600 hover:bg-red-700
-                         text-white font-semibold
-                         py-3 rounded-lg
-                         transition duration-200"
-                >
-                  Select Seats
-                </a>
-
-              </div>
-
-            {% endfor %}
-
-          </div>
-
-        {% else %}
-
-          <!-- No Shows -->
-          <div
-            class="bg-gray-900 border border-gray-800
-                   rounded-xl p-10 text-center"
-          >
-
-            <div class="text-5xl mb-4">
-              🎟️
-            </div>
-
-            <h3 class="text-2xl font-semibold mb-2">
-              No Shows Available
-            </h3>
-
-            <p class="text-gray-400">
-              There are currently no shows available for this movie.
+            <p class="text-lg font-semibold text-white">
+              {{ show.start_time }}
             </p>
-
           </div>
 
-        {% endif %}
+          <span class="text-gray-600"> → </span>
 
-      </section>
+          <div class="bg-gray-800 rounded-lg px-4 py-3">
+            <p class="text-gray-400 text-xs">End</p>
 
-    </main>
-
-
-    <!-- Footer -->
-    <footer class="border-t border-gray-800 mt-16">
-      <div
-        class="max-w-7xl mx-auto px-6 py-6
-               text-center text-gray-500"
-      >
-        © 2026 CinemaReserve. All rights reserved.
+            <p class="text-lg font-semibold text-white">{{ show.end_time }}</p>
+          </div>
+        </div>
       </div>
-    </footer>
 
-  </body>
-</html>
+      <!-- Reserve Button -->
+      <a
+        href="#"
+        class="block w-full text-center bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-lg transition duration-200"
+      >
+        Select Seats
+      </a>
+    </div>
+
+    {% endfor %}
+  </div>
+
+  {% else %}
+
+  <!-- No Shows -->
+  <div class="bg-gray-900 border border-gray-800 rounded-xl p-10 text-center">
+    <div class="text-5xl mb-4">🎟️</div>
+
+    <h3 class="text-2xl font-semibold mb-2">No Shows Available</h3>
+
+    <p class="text-gray-400">
+      There are currently no shows available for this movie.
+    </p>
+  </div>
+
+  {% endif %}
+</section>
+
+{% endblock main_content %}
