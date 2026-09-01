@@ -5,12 +5,16 @@ from .models import *
 
 admin.site.register(Movie)
 admin.site.register(Cinema)
-admin.site.register(CinemaHall)
+#admin.site.register(CinemaHall)
 #admin.site.register(Reservation)
 
 @admin.register(Seat)
 class SeatAdmin(admin.ModelAdmin):
     list_display=["name","cinemahall"]
+
+@admin.register(CinemaHall)
+class CinemaHalladmin(admin.ModelAdmin):
+    list_display=["name","cinema"]    
 
 @admin.register(Show)
 class ShowAdmin(admin.ModelAdmin):

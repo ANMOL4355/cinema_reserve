@@ -11,9 +11,10 @@ def hall_seats_view(request,show_id):
    #print(show.cinemahall.seats.all())
    seats=show.cinemahall.seats.all()
    context={
+      'show':show,
       'seats':seats
    }
-   
+
    return render(request,"core/hall_seats.html",context)
 
 def home(request):
