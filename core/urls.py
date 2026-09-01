@@ -6,4 +6,5 @@ urlpatterns=[
     path('movies/<pk>/',views.movie_detail,name="movie_detail"),
     path('register/',views.register_view,name="register"),
     path('login/',views.login_view,name="login"),
+    path('show/<show_id>/hall/',views.hall_seats_view,name="hall_seats"),
 ]

@@ -33,7 +33,7 @@ class CinemaHall(models.Model):
 
 class Seat(models.Model):
     name=models.CharField(max_length=10)
-    cinemahall=models.ForeignKey(CinemaHall,on_delete=models.CASCADE)
+    cinemahall=models.ForeignKey(CinemaHall,on_delete=models.CASCADE,related_name="seats")
 
 
     def __str__(self):

@@ -1,9 +1,21 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,get_object_or_404
 from .models import Movie,Show
 from .forms import RegisterForm
 from django.contrib.auth.models import User
 from django.contrib.auth import login,logout,authenticate
+from django.utils import timezone
 # Create your views here.
+def hall_seats_view(request,show_id):
+   show=get_object_or_404(Show,pk=show_id)
+   #print(show.cinemahall.seat_set.all())
+   #print(show.cinemahall.seats.all())
+   seats=show.cinemahall.seats.all()
+   context={
+      'seats':seats
+   }
+   
+   return render(request,"core/hall_seats.html",context)
+
 def home(request):
    
    latest_movies=Movie.objects.order_by("-release_date")[:8]
@@ -17,12 +29,13 @@ def home(request):
 
 def movie_detail(request,pk):
    movie=Movie.objects.get(pk=pk)
-   shows=Show.objects.filter(movie=movie)
+   shows=Show.objects.filter(movie=movie,show_time__gt=timezone.now())
    #print(shows)
 
    context={
       'movie':movie,
-      'shows':shows
+      'shows':shows,
+      'from_date':timezone.now(),
    }
    return render(request,"core/movie_detail.html",context)
 
