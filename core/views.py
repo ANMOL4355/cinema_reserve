@@ -1,15 +1,26 @@
 from django.shortcuts import render,redirect,get_object_or_404
-from .models import Movie,Show
+from .models import Movie,Show,Reservation
 from .forms import RegisterForm
 from django.contrib.auth.models import User
 from django.contrib.auth import login,logout,authenticate
 from django.utils import timezone
+from django.db.models import Exists, OuterRef
 # Create your views here.
 def hall_seats_view(request,show_id):
    show=get_object_or_404(Show,pk=show_id)
    #print(show.cinemahall.seat_set.all())
    #print(show.cinemahall.seats.all())
-   seats=show.cinemahall.seats.all()
+   seats = show.cinemahall.seats.annotate(
+     reserved=Exists(
+         Reservation.objects.filter(
+            show=show,
+            seat=OuterRef("pk"),
+            status__in=[Reservation.STATUS_CHOICES.confirm,
+                        Reservation.STATUS_CHOICES.pending
+                     ]
+        )
+    )
+)
    context={
       'show':show,
       'seats':seats

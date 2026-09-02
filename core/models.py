@@ -54,10 +54,18 @@ class Show(models.Model):
 
 
 class Reservation(models.Model):
-    customer=models.ForeignKey(User, on_delete=models.PROTECT)
-    show=models.ForeignKey(Show,on_delete=models.PROTECT)
-    seat=models.ForeignKey(Seat,on_delete=models.PROTECT)
 
+    class STATUS_CHOICES(models.TextChoices):
+        pending='pd','Pending'
+        confirm='cm','Confirm'
+        cancel='cl','Cancelled'
+        expired='ex','Expired'
+
+    customer=models.ForeignKey(User, on_delete=models.PROTECT,related_name="reservations")
+    show=models.ForeignKey(Show,on_delete=models.PROTECT,related_name="reservations")
+    seat=models.ForeignKey(Seat,on_delete=models.PROTECT,related_name="reservations")
+    status=models.CharField(max_length=2,choices=STATUS_CHOICES,default=STATUS_CHOICES.pending)
+    
     class Meta:
         unique_together=("show","seat")
 
