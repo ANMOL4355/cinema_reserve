@@ -80,8 +80,8 @@
                 <!-- Seat -->
                 <button
                     type="button"
-                    data-seat="{{ seat.name }}"
                     data-price="{{ show.price }}"
+                    data-seat-id="{{ seat.id }}"
 
                     {% if seat.reserved %}disabled{% endif %}
                     class="
@@ -237,10 +237,13 @@
 
             <!-- Continue Button -->
             <div>
-
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="show" id="show" value="{{show.id}}" />
+                <input type="hidden" name="seats" id="seats" />
                 <button
                     id="continue-button"
-                    type="button"
+                    type="submit"
                     disabled
                     class="
                         px-8 py-3
@@ -259,7 +262,7 @@
                 >
                     Continue
                 </button>
-
+            </form>
             </div>
 
         </div>
@@ -276,6 +279,9 @@
     // ==========================================
 
     const selectedSeats = [];
+
+    const seatsInput = document.getElementById("seats")
+    const showInput = document.getElementById("show")
 
 
     // ==========================================
@@ -303,7 +309,7 @@
         seat.addEventListener("click", function () {
 
             const seatName = this.dataset.seat;
-
+            const seatId = this.dataset.seatId;
             const seatPrice = parseFloat(this.dataset.price);
 
 
@@ -311,11 +317,11 @@
             // Seat is already selected
             // ==================================
 
-            if (selectedSeats.some(seat => seat.name === seatName)) {
+            if (selectedSeats.some(seat => seat.id === seatId)) {
 
                 // Find selected seat
                 const index = selectedSeats.findIndex(
-                    seat => seat.name === seatName
+                    seat => seat.id === seatId
                 );
 
 
@@ -345,8 +351,9 @@
 
                 // Add seat to selectedSeats
                 selectedSeats.push({
+                    id:seatId,
                     name: seatName,
-                    price: seatPrice
+                    price: seatPrice,
                 });
 
 
@@ -424,11 +431,11 @@
                 seatElement.textContent = seat.name;
 
                 selectedSeatsContainer.appendChild(seatElement);
-
+                
             });
 
         }
-
+         seatsInput.value = selectedSeats.map(seat => seat.id) .join(",");
 
         // ======================================
         // Calculate total price

@@ -1,12 +1,46 @@
 from django.shortcuts import render,redirect,get_object_or_404
-from .models import Movie,Show,Reservation
+from .models import Movie,Show,Reservation,Seat
 from .forms import RegisterForm
 from django.contrib.auth.models import User
 from django.contrib.auth import login,logout,authenticate
+from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.db.models import Exists, OuterRef
+from django.db import IntegrityError
 # Create your views here.
+
+@login_required
 def hall_seats_view(request,show_id):
+
+   if request.method=="POST":
+      form_show_id=request.POST.get('show')
+      form_seats=request.POST.get('seats')
+      seats_ids=form_seats.split(',')
+       # print("Reservation process")
+       # print(seats_names)
+       # print(form_show_id,form_seats)
+
+      try:
+         show=Show.objects.get(pk=form_show_id)
+         for seat_id in seats_ids:
+            seat=Seat.objects.get(pk=seat_id)
+            Reservation.objects.create(
+               show=show,
+               seat=seat,
+               customer=request.user
+            )
+      except IntegrityError:
+         print("one of these seats has just been reserved by another customer")
+         return redirect("hall_seats",show_id=show_id)
+      except Seat.DoesNotExist:
+         print("Incorrect seat selection")
+         return redirect("hall_seats",show_id=show_id)
+      
+      print("seats reserved successfully")
+      return redirect('back')
+
+
+
    show=get_object_or_404(Show,pk=show_id)
    #print(show.cinemahall.seat_set.all())
    #print(show.cinemahall.seats.all())
