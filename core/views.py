@@ -6,7 +6,7 @@ from django.contrib.auth import login,logout,authenticate
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.db.models import Exists, OuterRef
-from django.db import IntegrityError
+from django.db import IntegrityError,transaction
 # Create your views here.
 
 @login_required
@@ -21,13 +21,14 @@ def hall_seats_view(request,show_id):
        # print(form_show_id,form_seats)
 
       try:
-         show=Show.objects.get(pk=form_show_id)
-         for seat_id in seats_ids:
-            seat=Seat.objects.get(pk=seat_id)
-            Reservation.objects.create(
-               show=show,
-               seat=seat,
-               customer=request.user
+         with transaction.atomic():
+            show=Show.objects.get(pk=form_show_id)
+            for seat_id in seats_ids:
+               seat=Seat.objects.get(pk=seat_id)
+               Reservation.objects.create(
+                  show=show,
+                  seat=seat,
+                  customer=request.user
             )
       except IntegrityError:
          print("one of these seats has just been reserved by another customer")
