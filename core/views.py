@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.db.models import Exists, OuterRef
 from django.db import IntegrityError,transaction
+from django.contrib import messages
 # Create your views here.
 
 @login_required
@@ -31,13 +32,13 @@ def hall_seats_view(request,show_id):
                   customer=request.user
             )
       except IntegrityError:
-         print("one of these seats has just been reserved by another customer")
+         messages.error(request,"one of these seats has just been reserved by another customer")
          return redirect("hall_seats",show_id=show_id)
       except Seat.DoesNotExist:
-         print("Incorrect seat selection")
+         messages.error(request,"Incorrect seat selection")
          return redirect("hall_seats",show_id=show_id)
       
-      print("seats reserved successfully")
+      messages.success(request,"seats selected successfully, continue to payment")
       return redirect('back')
 
 

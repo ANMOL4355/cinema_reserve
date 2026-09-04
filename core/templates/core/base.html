@@ -23,24 +23,51 @@
 
           <a href="#" class="hover:text-red-500 transition"> Movies </a>
 
-          <a href="{% url 'login' %}" class="hover:text-red-500 transition"> Login </a>
+          <a href="{% url 'login' %}" class="hover:text-red-500 transition">
+            Login
+          </a>
         </div>
       </div>
     </nav>
 
+    <!-- Django Messages -->
+    {% if messages %}
+    <div class="fixed top-24 right-6 z-50 space-y-3">
+      {% for message in messages %}
+      <div
+        class="message flex items-center justify-between gap-4 min-w-[300px] max-w-md px-5 py-4 rounded-lg shadow-lg border border-gray-700 bg-gray-900 text-white">
+        <div class="flex items-center gap-3">
+          {% if message.tags == "success" %}
+          <span class="text-green-400 text-xl">✓</span> 
+          {% elif message.tags == "error" %}
+          <span class="text-red-400 text-xl">✕</span>
+          {% elif message.tags == "warning" %}
+          <span class="text-yellow-400 text-xl">⚠</span> 
+          {% else %}
+          <span class="text-blue-400 text-xl">ⓘ</span>
+          {% endif %}
+          <p class="text-sm">{{ message }}</p>
+        </div>
+        <!-- Close button -->
+        <button
+          type="button"
+          onclick="this.parentElement.remove()"
+          class="text-gray-400 hover:text-white text-lg"
+        >
+          ×
+        </button>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-6 py-10">
-        {% block main_content %}
-        Dummy main content
-        {% endblock main_content %}
-
+      {% block main_content %} Dummy main content {% endblock main_content %}
     </main>
     <!-- Footer -->
     <footer class="border-t border-gray-800 mt-16">
-      <div
-        class="max-w-7xl mx-auto px-6 py-6
-               text-center text-gray-500"
-      >
+      <div class="max-w-7xl mx-auto px-6 py-6 text-center text-gray-500">
         © 2026 CinemaReserve. All rights reserved.
       </div>
     </footer>
