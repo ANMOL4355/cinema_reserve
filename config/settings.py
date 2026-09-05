@@ -132,3 +132,11 @@ MEDIA_ROOT="media"
 MEDIA_URL="media/"
 
 LOGIN_URL = '/login/'
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+
+INSTALLED_APPS += ['django_celery_beat']
+
+RESERVATION_WINDOW_TIME = 5 #MINUTES
