@@ -58,6 +58,14 @@ class Show(models.Model):
         return f"{self.movie} - {self.cinemahall}"
 
 
+class MasterReservation(models.Model):
+    pidx = models.CharField(max_length=70,help_text="Payment initiate id from Khalti", default="")
+    amount = models.PositiveBigIntegerField(default=0)
+    transaction_id=models.CharField(max_length=60,default="")
+    payment_status = models.CharField(max_length=20,default="")
+    show=models.ForeignKey(Show,on_delete=models.PROTECT,related_name="master_reservations",null=True)
+
+
 class Reservation(models.Model):
 
     class STATUS_CHOICES(models.TextChoices):
@@ -70,6 +78,8 @@ class Reservation(models.Model):
     show=models.ForeignKey(Show,on_delete=models.PROTECT,related_name="reservations")
     seat=models.ForeignKey(Seat,on_delete=models.PROTECT,related_name="reservations")
     status=models.CharField(max_length=2,choices=STATUS_CHOICES,default=STATUS_CHOICES.pending)
+
+    master_reservation = models.ForeignKey(MasterReservation,on_delete=models.PROTECT, null=True,related_name="reservations")
 
     created_at = models.DateTimeField(auto_now_add=True,null=True)
     expires_at = models.DateTimeField(null=True)

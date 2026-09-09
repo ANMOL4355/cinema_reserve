@@ -105,7 +105,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kathmandu'
 
 USE_I18N = True
 
@@ -140,3 +140,9 @@ CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 INSTALLED_APPS += ['django_celery_beat']
 
 RESERVATION_WINDOW_TIME = 5 #MINUTES
+
+KHALTI_INITIATE_URL = "https://dev.khalti.com/api/v2/epayment/initiate/"
+KHALTI_LOOKUP_URL = "https://dev.khalti.com/api/v2/epayment/lookup/"
+KHALTI_API_SECRET_KEY = "276720b4c3e3476bad2a1e7edb685a9f"
+KHALTI_RETURN_URL = "http://127.0.0.1:8000/reservation/payment/verification"
+KHALTI_WEBSITE_URL = "http://127.0.0.1:8000/"
