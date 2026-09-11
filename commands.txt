@@ -1,0 +1,11 @@
+sudo systemctl start redis-server
+sudo systemctl status redis-server
+
+   #check redis server port
+sudo ss -lntp | grep redis
+
+   #start celery worker
+celery -A config worker -l info
+
+  #start celery beat, to take tasks from db
+celery -A config beat -l info -S django_celery_beat.schedulers.DatabaseScheduler

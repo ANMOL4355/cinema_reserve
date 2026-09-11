@@ -11,21 +11,28 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+load_dotenv(BASE_DIR / ".env")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-c(!$v9(@*mwf5ogxx#5ga$u6!sm*cb-(5v2v#5)b8#=n8256d('
+SECRET_KEY = os.environ.get("SECRET_KEY")
+if not SECRET_KEY:
+    raise ValueError("SECRET_KEY is missing from the environment")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [ host.strip()
+    for host in os.environ.get("ALLOWED_HOSTS", "").split(",")
+    if host.strip()]
 
 
 # Application definition
@@ -121,11 +128,11 @@ STATIC_URL = 'static/'
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
 
-MAILERS = {
-    'default': {
-        'BACKEND': 'django.core.mail.backends.console.EmailBackend',
-    },
-}
+# MAILERS = {
+#     'default': {
+#         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
+#     },
+# }
 
 
 MEDIA_ROOT="media"
@@ -133,16 +140,41 @@ MEDIA_URL="media/"
 
 LOGIN_URL = '/login/'
 
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_BROKER_URL = os.environ.get(
+    "CELERY_BROKER_URL",
+    "redis://localhost:6379/0"
+)
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
 INSTALLED_APPS += ['django_celery_beat']
 
-RESERVATION_WINDOW_TIME = 5 #MINUTES
+RESERVATION_WINDOW_TIME = int(
+    os.environ.get("RESERVATION_WINDOW_TIME", "5")
+)
 
-KHALTI_INITIATE_URL = "https://dev.khalti.com/api/v2/epayment/initiate/"
-KHALTI_LOOKUP_URL = "https://dev.khalti.com/api/v2/epayment/lookup/"
-KHALTI_API_SECRET_KEY = "276720b4c3e3476bad2a1e7edb685a9f"
+KHALTI_INITIATE_URL = os.environ.get(
+    "KHALTI_INITIATE_URL",
+    "https://a.khalti.com/api/v2/epayment/initiate/"
+)
+KHALTI_LOOKUP_URL = os.environ.get(
+    "KHALTI_LOOKUP_URL",
+    "https://a.khalti.com/api/v2/epayment/lookup/"
+)
+KHALTI_API_SECRET_KEY = os.environ.get("KHALTI_SECRET_KEY")
 KHALTI_RETURN_URL = "http://127.0.0.1:8000/reservation/payment/verification"
 KHALTI_WEBSITE_URL = "http://127.0.0.1:8000/"
+
+# EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+
+EMAIL_USE_TLS = True
+
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

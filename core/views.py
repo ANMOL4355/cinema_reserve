@@ -10,6 +10,8 @@ from django.db import IntegrityError,transaction
 from django.contrib import messages
 from django.conf import settings
 from .services import verify_khalti_payment, initiate_khalti_payment
+from .tasks import send_receipt_in_mail
+from django.urls import reverse
 # Create your views here.
 
 @login_required
@@ -40,38 +42,120 @@ def reservations(request):
 
 @login_required
 def verify_reservation_payment(request):
-   data = request.GET
-   pidx = data.get('pidx')
-   purchase_order_id = data.get('purchase_order_id')
-   try:
-      master = MasterReservation.objects.get(pidx=pidx,pk=purchase_order_id)
-   except MasterReservation.DoesNotExist:
-      print("Something went wrong. Masterreservation doesn't exists")
-   except MasterReservation.MultipleObjectsReturned:
-      print("Duplicate pidx exists")
 
-   data = verify_khalti_payment(pidx)
+    pidx = request.GET.get("pidx")
+    purchase_order_id = request.GET.get("purchase_order_id")
 
-   if data.get('status') == 'Completed':
-       if data.get('total_amount') == master.amount:
+    if not pidx or not purchase_order_id:
+        messages.error(request, "Invalid payment information.")
+        return redirect("back")
 
-          
-          with transaction.atomic():
-               master.transaction_id = data.get('transaction_id')
-               master.payment_status = 'Completed'
-               master.reservations.all().update(status=Reservation.STATUS_CHOICES.confirm)
-               master.save()
+    try:
+        master = MasterReservation.objects.get(
+            pidx=pidx,
+            pk=purchase_order_id
+        )
 
-          messages.success(request,"Pyment and Reservation confirmed")
-          return redirect ("reservations")
-       else:
-          messages.error(request,"Amount mismatch, Reservation confirmation failed")
-   else:
-      print("Amount mismatch, Reservation confirmation failed")
+    except MasterReservation.DoesNotExist:
+        messages.error(request, "Reservation not found.")
+        return redirect("back")
 
-   return redirect("back")
+    except MasterReservation.MultipleObjectsReturned:
+        messages.error(request, "Duplicate reservation found.")
+        return redirect("back")
 
 
+    # Prevent processing the same payment twice
+    if master.payment_status == "Completed":
+        messages.info(request, "This reservation has already been confirmed.")
+        return redirect("reservations")
+
+
+    # Verify directly with Khalti
+    data = verify_khalti_payment(pidx)
+
+    print("====================================")
+    print("KHALTI VERIFICATION RESPONSE:")
+    print(data)
+    print("====================================")
+
+
+    # Payment must be completed
+    if data.get("status") != "Completed":
+        messages.error(request, "Payment was not completed.")
+        return redirect("back")
+
+
+    # Calculate the amount ourselves
+    seat_count = master.reservations.count()
+
+    expected_amount = (
+        master.show.price
+        * seat_count
+        * 100
+    )
+
+    khalti_amount = data.get("total_amount")
+
+
+    print("SHOW PRICE:", master.show.price)
+    print("SEAT COUNT:", seat_count)
+    print("EXPECTED AMOUNT:", expected_amount)
+    print("KHALTI AMOUNT:", khalti_amount)
+    print("DATABASE MASTER AMOUNT:", master.amount)
+
+
+    # Amount must match
+    if khalti_amount != expected_amount:
+
+        messages.error(
+            request,
+            "Payment amount mismatch. Reservation was not confirmed."
+        )
+
+        print("PAYMENT AMOUNT MISMATCH")
+
+        return redirect("back")
+
+
+    # Everything is valid
+    with transaction.atomic():
+
+        master.amount = expected_amount
+        master.transaction_id = data.get("transaction_id")
+        master.payment_status = "Completed"
+
+        master.reservations.all().update(
+            status=Reservation.STATUS_CHOICES.confirm
+        )
+
+        master.save()
+
+
+    reservation_url = request.build_absolute_uri(
+        reverse(
+            "reservation_detail",
+            kwargs={"pk": master.id}
+        )
+    )
+
+
+    send_receipt_in_mail.delay(
+        request.user.email,
+        master.id,
+        reservation_url
+    )
+
+
+    messages.success(
+        request,
+        "Payment and Reservation confirmed"
+    )
+
+    return redirect("reservations")
+ 
+ 
+ 
 @login_required
 def hall_seats_view(request,show_id):
 
