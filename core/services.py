@@ -47,7 +47,7 @@ def initiate_khalti_payment(master, show, seats_ids, user):
         "return_url": settings.KHALTI_RETURN_URL ,
         "website_url": settings.KHALTI_WEBSITE_URL,
         "amount": str(amount),
-        "purchase_order_id": master.id,
+        "purchase_order_id": str(master.id),
         "purchase_order_name": "Movie Ticket",
         "customer_info": {
             "name": user.get_full_name() or user.username,

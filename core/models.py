@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.conf import settings
 from datetime import timedelta
+import uuid
 # Create your models here.
 
 
@@ -59,11 +60,13 @@ class Show(models.Model):
 
 
 class MasterReservation(models.Model):
+    id = models.UUIDField(primary_key=True,default=uuid.uuid7,editable=False,)
     pidx = models.CharField(max_length=70,help_text="Payment initiate id from Khalti", default="")
     amount = models.PositiveBigIntegerField(default=0)
     transaction_id=models.CharField(max_length=60,default="")
     payment_status = models.CharField(max_length=20,default="")
     show=models.ForeignKey(Show,on_delete=models.PROTECT,related_name="master_reservations",null=True)
+    
 
 
 class Reservation(models.Model):
