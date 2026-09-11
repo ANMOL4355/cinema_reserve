@@ -5,6 +5,9 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
+import qrcode
+from io import BytesIO
+from email.mime.image import MIMEImage
 
 @shared_task
 def cleanup_expired_and_cancelled_reservations():
@@ -71,6 +74,30 @@ def send_receipt_in_mail(user_email, master_id, reservation_url):
             "reservation_url": reservation_url,
         },
     )
+    
+    # Generate QR code containing only master_id
+    qr_data = str(master_id)
+
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_M,
+        box_size=10,
+        border=4,
+    )
+
+    qr.add_data(qr_data)
+    qr.make(fit=True)
+
+    qr_image = qr.make_image(
+        fill_color="black",
+        back_color="white",
+    )
+    
+    # Keep the QR code in memory
+    qr_buffer = BytesIO()
+    qr_image.save(qr_buffer, format="PNG")
+    qr_buffer.seek(0)
+
 
     email = EmailMultiAlternatives(
         subject=subject,
@@ -78,9 +105,20 @@ def send_receipt_in_mail(user_email, master_id, reservation_url):
         from_email=settings.DEFAULT_FROM_EMAIL,
         to=recipient_list,
     )
-
     email.attach_alternative(html_message, "text/html")
+    
+     # Attach QR code for displaying inside the email
+    inline_qr_attachment = MIMEImage( qr_buffer.getvalue(), _subtype="png",)
+    inline_qr_attachment.add_header("Content-ID","<reservation_qr>",)
+    inline_qr_attachment.add_header("Content-Disposition","inline",filename=f"reservation_{master_id}_qr.png",)
+    email.attach(inline_qr_attachment)
 
+     # Attach QR code as a downloadable file
+    downloadable_qr_attachment = MIMEImage(qr_buffer.getvalue(), _subtype="png",)
+    downloadable_qr_attachment.add_header("Content-Disposition","attachment",filename=f"reservation_{master_id}_qr.png",)
+    email.attach(downloadable_qr_attachment)
+
+    # Send email
     email.send(fail_silently=False)
     
     
