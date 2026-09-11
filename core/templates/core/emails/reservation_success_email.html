@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservation Confirmed</title>
+</head>
+
+<body style="
+    margin: 0;
+    padding: 0;
+    background-color: #111827;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #f9fafb;
+">
+
+    <table
+        width="100%"
+        cellpadding="0"
+        cellspacing="0"
+        border="0"
+        style="
+            background-color: #111827;
+            padding: 30px 15px;
+        "
+    >
+        <tr>
+            <td align="center">
+
+                <table
+                    width="100%"
+                    cellpadding="0"
+                    cellspacing="0"
+                    border="0"
+                    style="
+                        max-width: 600px;
+                        background-color: #1f2937;
+                        border-radius: 16px;
+                        overflow: hidden;
+                    "
+                >
+
+                    <!-- Header -->
+                    <tr>
+                        <td style="
+                            background-color: #dc2626;
+                            padding: 28px 20px;
+                            text-align: center;
+                        ">
+                            <h1 style="
+                                margin: 0;
+                                color: #ffffff;
+                                font-size: 28px;
+                                letter-spacing: 1px;
+                            ">
+                                CinemaReserve
+                            </h1>
+
+                            <p style="
+                                margin: 8px 0 0;
+                                color: #fee2e2;
+                                font-size: 14px;
+                            ">
+                                Your movie experience starts here
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Main content -->
+                    <tr>
+                        <td style="padding: 35px 30px;">
+
+                            <!-- Success icon -->
+                            <div style="
+                                text-align: center;
+                                margin-bottom: 25px;
+                            ">
+                                <div style="
+                                    display: inline-block;
+                                    width: 64px;
+                                    height: 64px;
+                                    line-height: 64px;
+                                    border-radius: 50%;
+                                    background-color: #16a34a;
+                                    color: #ffffff;
+                                    font-size: 34px;
+                                    font-weight: bold;
+                                ">
+                                    ✓
+                                </div>
+                            </div>
+
+                            <h2 style="
+                                margin: 0 0 12px;
+                                text-align: center;
+                                color: #ffffff;
+                                font-size: 24px;
+                            ">
+                                Reservation Confirmed!
+                            </h2>
+
+                            <p style="
+                                margin: 0 0 25px;
+                                text-align: center;
+                                color: #d1d5db;
+                                font-size: 16px;
+                                line-height: 1.6;
+                            ">
+                                Your movie reservation has been completed
+                                successfully. Thank you for choosing
+                                CinemaReserve.
+                            </p>
+
+                            <!-- Reservation details -->
+                            <table
+                                width="100%"
+                                cellpadding="0"
+                                cellspacing="0"
+                                border="0"
+                                style="
+                                    background-color: #374151;
+                                    border-radius: 10px;
+                                    margin-bottom: 28px;
+                                "
+                            >
+                                <tr>
+                                    <td style="
+                                        padding: 18px 20px;
+                                        border-bottom: 1px solid #4b5563;
+                                    ">
+                                        <span style="
+                                            color: #9ca3af;
+                                            font-size: 13px;
+                                        ">
+                                            Reservation ID
+                                        </span>
+
+                                        <br>
+
+                                        <strong style="
+                                            color: #ffffff;
+                                            font-size: 18px;
+                                        ">
+                                            #{{ master_id }}
+                                        </strong>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="padding: 18px 20px;">
+                                        <span style="
+                                            color: #9ca3af;
+                                            font-size: 13px;
+                                        ">
+                                            Payment Status
+                                        </span>
+
+                                        <br>
+
+                                        <strong style="
+                                            color: #86efac;
+                                            font-size: 16px;
+                                        ">
+                                            Completed
+                                        </strong>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- View reservation button -->
+                            <table
+                                width="100%"
+                                cellpadding="0"
+                                cellspacing="0"
+                                border="0"
+                            >
+                                <tr>
+                                    <td align="center">
+                                        <a
+                                            href="{{ reservation_url }}"
+                                            style="
+                                                display: inline-block;
+                                                padding: 15px 28px;
+                                                background-color: #dc2626;
+                                                color: #ffffff;
+                                                text-decoration: none;
+                                                border-radius: 8px;
+                                                font-size: 16px;
+                                                font-weight: bold;
+                                            "
+                                        >
+                                            View Reservation Details
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <p style="
+                                margin: 28px 0 0;
+                                text-align: center;
+                                color: #9ca3af;
+                                font-size: 13px;
+                                line-height: 1.6;
+                            ">
+                                You can use the button above to view your
+                                reservation details and download your receipt.
+                            </p>
+
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="
+                            padding: 22px 20px;
+                            background-color: #111827;
+                            text-align: center;
+                        ">
+                            <p style="
+                                margin: 0;
+                                color: #9ca3af;
+                                font-size: 13px;
+                            ">
+                                © 2026 CinemaReserve. All rights reserved.
+                            </p>
+
+                            <p style="
+                                margin: 8px 0 0;
+                                color: #6b7280;
+                                font-size: 12px;
+                            ">
+                                This is an automated email. Please do not reply.
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>
