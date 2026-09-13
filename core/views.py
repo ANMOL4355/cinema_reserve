@@ -12,7 +12,32 @@ from django.conf import settings
 from .services import verify_khalti_payment, initiate_khalti_payment
 from .tasks import send_receipt_in_mail
 from django.urls import reverse
+from django.http import HttpResponse
+
 # Create your views here.
+@login_required
+def reservation_qr_verification(request):
+   if request.method == 'POST':
+      master_id = request.POST.get('master_id')
+      try:
+         master = get_object_or_404(MasterReservation,pk=master_id)
+      except Exception:
+         return HttpResponse("<h1> Ticket doesn't exist </h1>")
+         
+      context = {
+         'movie_name':master.show.movie.name,
+         'show_time' : master.show.show_time,
+         'seats' : Seat.objects.filter(reservations__in=master.reservations.all())
+      }
+      
+      if master:
+         return render(request,"core/ticket.html",context)
+      else:
+         return HttpResponse("<h1> Ticket doesn't exist </h1>")
+      
+         
+   return render(request,"core/qr_verification.html")
+
 
 @login_required
 def reservation_detail(request,pk):
@@ -131,7 +156,6 @@ def verify_reservation_payment(request):
 
         master.save()
 
-
     reservation_url = request.build_absolute_uri(
         reverse(
             "reservation_detail",
@@ -139,13 +163,7 @@ def verify_reservation_payment(request):
         )
     )
 
-
-    send_receipt_in_mail.delay(
-        request.user.email,
-        master.id,
-        reservation_url
-    )
-
+    send_receipt_in_mail.delay(request.user.email,master.id,reservation_url)
 
     messages.success(
         request,

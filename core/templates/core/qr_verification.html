@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Scan Reservation QR</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #111827;
+            color: white;
+        }
+
+        .scanner-container {
+            width: 100%;
+            max-width: 450px;
+            background: #1f2937;
+            border: 1px solid #374151;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            margin-top: 0;
+            margin-bottom: 8px;
+            font-size: 26px;
+        }
+
+        .description {
+            color: #9ca3af;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .camera-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            border-radius: 16px;
+            background: #000;
+        }
+
+        #camera {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .scanner-frame {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 65%;
+            aspect-ratio: 1 / 1;
+            transform: translate(-50%, -50%);
+            border: 3px solid #ef4444;
+            border-radius: 18px;
+            pointer-events: none;
+        }
+
+        .scanner-frame::before,
+        .scanner-frame::after {
+            content: "";
+            position: absolute;
+            width: 35px;
+            height: 35px;
+            border-color: #fca5a5;
+            border-style: solid;
+        }
+
+        .scanner-frame::before {
+            top: -3px;
+            left: -3px;
+            border-width: 5px 0 0 5px;
+            border-radius: 12px 0 0 0;
+        }
+
+        .scanner-frame::after {
+            bottom: -3px;
+            right: -3px;
+            border-width: 0 5px 5px 0;
+            border-radius: 0 0 12px 0;
+        }
+
+        .scan-line {
+            position: absolute;
+            top: 10%;
+            left: 8%;
+            width: 84%;
+            height: 2px;
+            background: #ef4444;
+            box-shadow: 0 0 10px #ef4444;
+            animation: scanAnimation 2s linear infinite;
+        }
+
+        @keyframes scanAnimation {
+            0% {
+                top: 10%;
+            }
+
+            50% {
+                top: 90%;
+            }
+
+            100% {
+                top: 10%;
+            }
+        }
+
+        .status {
+            margin: 18px 0;
+            color: #d1d5db;
+            font-size: 14px;
+            min-height: 20px;
+        }
+
+        .result-box {
+            display: none;
+            margin-top: 20px;
+            padding: 16px;
+            background: #064e3b;
+            border: 1px solid #10b981;
+            border-radius: 12px;
+        }
+
+        .result-box.visible {
+            display: block;
+        }
+
+        .result-title {
+            color: #6ee7b7;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        #result {
+            font-size: 28px;
+            font-weight: bold;
+            color: white;
+            word-break: break-word;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            flex: 1;
+            border: none;
+            border-radius: 10px;
+            padding: 13px 16px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        #startButton {
+            background: #dc2626;
+            color: white;
+        }
+
+        #startButton:hover {
+            background: #b91c1c;
+        }
+
+        #stopButton {
+            background: #374151;
+            color: white;
+        }
+
+        #stopButton:hover {
+            background: #4b5563;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .error {
+            color: #fca5a5;
+        }
+
+        .success {
+            color: #6ee7b7;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js" 
+          integrity="sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V"
+          crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+    <div class="scanner-container">
+        <h1>Scan Reservation QR</h1>
+        <div id="verificationMessage"></div>
+
+        <p class="description">
+            Point your rear camera at the customer's reservation QR code.
+        </p>
+
+        <div class="camera-wrapper">
+            <video
+                id="camera"
+                autoplay
+                muted
+                playsinline
+            ></video>
+
+            <div class="scanner-frame">
+                <div class="scan-line"></div>
+            </div>
+        </div>
+
+        <p id="status" class="status">
+            Press "Start Camera" to begin scanning.
+        </p>
+
+        <div id="resultBox" class="result-box">
+            <div class="result-title">Scanned Reservation ID</div>
+            <div id="result"></div>
+        </div>
+
+        <div class="button-group">
+            <button id="startButton">
+                Start Camera
+            </button>
+
+            <button id="stopButton" disabled>
+                Stop Camera
+            </button>
+        </div>
+        <br>
+     <div class="qr-result">
+       <p>QR Result:</p>
+
+       <form
+        id="verificationForm"
+        hx-post="{% url 'reservation_qr_verification' %}"
+        hx-target="#verificationMessage"
+        hx-swap = "innerHTML"
+         >
+        {% csrf_token %}
+
+        <!-- The scanned reservation ID will be stored here -->
+           <input type="hidden" id="masterIdInput" name="master_id">
+
+           <button
+            type="submit"
+            id="verifyButton"
+            disabled
+        >
+            Verify
+           </button>
+        </form>
+        
+     </div>
+    </div>
+
+
+    <script>
+        const camera = document.getElementById("camera");
+        const statusText = document.getElementById("status");
+        const resultBox = document.getElementById("resultBox");
+        const resultText = document.getElementById("result");
+
+        const startButton = document.getElementById("startButton");
+        const stopButton = document.getElementById("stopButton");
+
+        const verificationForm = document.getElementById("verificationForm");
+        const masterIdInput = document.getElementById("masterIdInput");
+        const verifyButton = document.getElementById("verifyButton")
+
+        let cameraStream = null;
+        let scanning = false;
+        let animationFrameId = null;
+        let barcodeDetector = null;
+
+
+        async function startCamera() {
+            resultBox.classList.remove("visible");
+            resultText.textContent = "";
+
+            document.getElementById("verificationMessage").innerHTML="";//clear previous verification result
+            masterIdInput.value = ""; //clear hidden reservation ID
+            verifyButton.disabled=true;
+            statusText.textContent='Press "Start Camera" to begin scanning. ';
+            statusText.className="status"
+
+
+            if (!("BarcodeDetector" in window)) {
+                statusText.textContent =
+                    "QR scanning is not supported by this browser. Try Chrome on Android.";
+                statusText.className = "status error";
+                return;
+            }
+
+            try {
+                barcodeDetector = new BarcodeDetector({
+                    formats: ["qr_code"]
+                });
+
+                cameraStream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: {
+                            ideal: "environment"
+                        },
+                        width: {
+                            ideal: 1280
+                        },
+                        height: {
+                            ideal: 720
+                        }
+                    },
+                    audio: false
+                });
+
+                camera.srcObject = cameraStream;
+
+                scanning = true;
+
+                startButton.disabled = true;
+                stopButton.disabled = false;
+
+                statusText.textContent = "Scanning for QR code...";
+                statusText.className = "status";
+
+                scanQRCode();
+
+            } catch (error) {
+                console.error("Camera error:", error);
+
+                statusText.textContent =
+                    "Unable to access the camera. Please allow camera permission.";
+                statusText.className = "status error";
+            }
+        }
+
+
+        async function scanQRCode() {
+            if (!scanning) {
+                return;
+            }
+
+            try {
+                const detectedCodes = await barcodeDetector.detect(camera);
+
+                if (detectedCodes.length > 0) {
+                    const scannedValue = detectedCodes[0].rawValue;
+
+                    if (scannedValue) {
+                        handleScannedQRCode(scannedValue);
+                        return;
+                    }
+                }
+
+            } catch (error) {
+                console.error("QR detection error:", error);
+            }
+
+            animationFrameId = requestAnimationFrame(scanQRCode);
+        }
+
+
+        function handleScannedQRCode(scannedValue) {
+            stopCamera();
+
+            resultText.textContent = scannedValue;
+            resultBox.classList.add("visible");
+
+            statusText.textContent = "QR code scanned successfully.";
+            statusText.className = "status success";
+
+        
+            const masterId = scannedValue.trim();
+
+            console.log("Scanned master_id:", masterId);
+
+            masterIdInput.value = masterId; //storing scanned ID in the hidden form input
+            verifyButton.disabled = false; //enable verify button
+            
+        }
+
+        function stopCamera() {
+            scanning = false;
+
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(function(track) {
+                    track.stop();
+                });
+
+                cameraStream = null;
+            }
+
+            camera.srcObject = null;
+
+            startButton.disabled = false;
+            stopButton.disabled = true;
+        }
+
+
+        startButton.addEventListener("click", startCamera);
+
+        stopButton.addEventListener("click", function() {
+            stopCamera();
+
+            statusText.textContent =
+                "Camera stopped. Press 'Start Camera' to scan again.";
+            statusText.className = "status";
+        });
+
+
+        window.addEventListener("beforeunload", function() {
+            stopCamera();
+        });
+    </script>
+
+</body>
+</html>
