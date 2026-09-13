@@ -51,8 +51,7 @@ def send_receipt_in_mail(user_email, master_id, reservation_url):
         for email in [
             user_email,
             "lelouch5544@gmail.com",
-            "anantakarkee123@gmail.com",
-            "conesih383@94an.com",
+            "vefegib744@daugr.com",
         ]
         if email
     ]
