@@ -1,1 +1,29 @@
 {% extends "core/base.html" %}
+
+{% block main_content %}
+<div>
+<label for="cinema">Choose a Cinema:</label>
+<select id="cinema" name="cinema_id" class="text-black"
+   hx-get="{% url 'get_cinema_halls' %}"
+   hx-trigger = "change"
+   hx-include = "this"
+   hx-target = "#hall"
+   hx-swap = "outerHTML"
+>
+    {% for cinema in cinemas %}
+       <option value="{{ cinema.id }}">{{ cinema.name }}</option>
+    {% endfor %}
+</select>
+</div>
+
+<div>
+<label for="hall">Choose a Hall:</label>
+{% include "cine_admin/hall-select-partial.html" %}
+</div>
+
+<div>
+{% include "cine_admin/seats-setup-partial.html" %}
+</div>
+
+
+{% endblock main_content %}

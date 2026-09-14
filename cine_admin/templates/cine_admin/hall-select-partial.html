@@ -1,0 +1,5 @@
+<select id="hall" name="hall" class="text-black">
+    {% for hall in halls %}
+       <option value="{{ hall.id }}">{{ hall.name }}</option>
+    {% endfor %}
+</select>
