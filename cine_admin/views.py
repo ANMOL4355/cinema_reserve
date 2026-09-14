@@ -28,10 +28,13 @@ def hall_seat_setup(request):
     cinemas = Cinema.objects.all()
     first_cinema = cinemas.first()
     halls = CinemaHall.objects.filter(cinema=first_cinema)
+    first_hall = halls.first()
+    seats = Seat.objects.filter(cinemahall=first_hall)
     
     context = {
         'cinemas':cinemas,
         'halls':halls,
+        'seats':seats,
     }
     
     return render(request,"cine_admin/hall-seats-setup.html",context)

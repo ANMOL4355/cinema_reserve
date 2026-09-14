@@ -1,1 +1,4 @@
-seats partial
+{% for seat in seats %}
+  <input type="text" id="{{seat.id}}" name="{{seat.id}}" value="{{seat.name}}" />
+
+{% endfor %}
