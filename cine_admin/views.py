@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from core.models import Cinema,CinemaHall,Seat
 from django.http import HttpResponse
 from django.template.loader import render_to_string
@@ -25,6 +25,11 @@ def get_cinema_halls(request):
 
 def hall_seat_setup(request):
     
+    if request.method == "POST":
+        print(request.POST)
+        
+        return redirect("hall_seat_setup")
+        
     cinemas = Cinema.objects.all()
     first_cinema = cinemas.first()
     halls = CinemaHall.objects.filter(cinema=first_cinema)

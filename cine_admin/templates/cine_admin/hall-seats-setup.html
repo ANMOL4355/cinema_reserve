@@ -1,6 +1,8 @@
 {% extends "core/base.html" %}
 
 {% block main_content %}
+<form method="post" >
+   {% csrf_token %}
 <div>
 <label for="cinema">Choose a Cinema:</label>
 <select id="cinema" name="cinema_id" class="text-black"
@@ -24,6 +26,7 @@
 <div class="text-black">
 {% include "cine_admin/seats-setup-partial.html" %}
 </div>
-<button type="submit">Save</button>
 
+<button type="submit">Save</button>
+</form>
 {% endblock main_content %}

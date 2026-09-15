@@ -1,4 +1,99 @@
+
+{% if seats %}
 {% for seat in seats %}
   <input type="text" id="{{seat.id}}" name="{{seat.id}}" value="{{seat.name}}" />
 
 {% endfor %}
+
+{% else %}
+  <div class="text-white">
+    <div class="mb-4">
+        <label for="row" class="block mb-2">No. of rows</label>
+        <input
+            class="text-black rounded px-2 py-1"
+            type="number"
+            id="row"
+            name="row"
+            min="1"
+            max="20"
+        />
+    </div>
+
+    <div class="mb-4">
+        <label for="column" class="block mb-2">No. of columns</label>
+        <input
+            class="text-black rounded px-2 py-1"
+            type="number"
+            id="column"
+            name="column"
+            min="1"
+            max="20"
+        />
+    </div>
+    <div id="show-screen" class="mt-6">Show Screen</div>
+    <!-- Grid preview will appear here -->
+    <div id="gridPreview" class="mt-6"></div>
+</div>
+
+<script>
+    const rowInput = document.getElementById("row");
+    const columnInput = document.getElementById("column");
+    const gridPreview = document.getElementById("gridPreview");
+
+    function createGrid() {
+        const rows = parseInt(rowInput.value);
+        const columns = parseInt(columnInput.value);
+
+        // Clear the previous grid
+        gridPreview.innerHTML = "";
+
+        // Do not create a grid for invalid values
+        if (
+            isNaN(rows) ||
+            isNaN(columns) ||
+            rows < 1 ||
+            columns < 1
+        ) {
+            return;
+        }
+
+        // Create the grid container
+        const grid = document.createElement("div");
+
+        grid.className = "grid gap-2";
+
+        // Set the number of columns dynamically
+        grid.style.gridTemplateColumns = `repeat(${columns}, minmax(0, 1fr))`;
+
+        // Create each grid element
+        for (let row = 1; row <= rows; row++) {
+            for (let column = 1; column <= columns; column++) {
+                const input = document.createElement("input");
+
+                input.type = "text";
+
+                // Example: seat_1_1, seat_1_2, seat_2_1
+                input.name = `seat_${row}_${column}`;
+
+                // Initial value, for example A1, A2, B1
+                input.value = `${String.fromCharCode(64 + row)}${column}`;
+
+                input.placeholder = `Seat ${row}-${column}`;
+
+                input.className =
+                    "w-full rounded-lg border border-gray-600 " +
+                    "bg-gray-800 px-2 py-2 text-center text-white " +
+                    "focus:border-red-500 focus:outline-none";
+
+                grid.appendChild(input);
+            }
+        }
+
+        gridPreview.appendChild(grid);
+    }
+
+    // Regenerate the preview whenever rows or columns change
+    rowInput.addEventListener("input", createGrid);
+    columnInput.addEventListener("input", createGrid);
+</script>
+{% endif %}
