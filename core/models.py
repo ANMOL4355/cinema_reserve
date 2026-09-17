@@ -29,7 +29,8 @@ class Cinema(models.Model):
 class CinemaHall(models.Model):
     name=models.CharField(max_length=100)
     cinema=models.ForeignKey(Cinema,on_delete=models.PROTECT)
-
+    row = models.PositiveIntegerField(null=True)
+    col = models.PositiveIntegerField(null=True)
 
     def __str__(self):
         return self.name

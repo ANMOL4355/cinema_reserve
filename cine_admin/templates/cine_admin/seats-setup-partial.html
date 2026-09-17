@@ -1,13 +1,5 @@
-
-{% if seats %}
-{% for seat in seats %}
-  <input type="text" id="{{seat.id}}" name="{{seat.id}}" value="{{seat.name}}" />
-
-{% endfor %}
-
-{% else %}
-  <div class="text-white">
-    <div class="mb-4">
+   
+   <div class="text-white">
         <label for="row" class="block mb-2">No. of rows</label>
         <input
             class="text-black rounded px-2 py-1"
@@ -17,9 +9,7 @@
             min="1"
             max="20"
         />
-    </div>
-
-    <div class="mb-4">
+     
         <label for="column" class="block mb-2">No. of columns</label>
         <input
             class="text-black rounded px-2 py-1"
@@ -28,9 +18,19 @@
             name="column"
             min="1"
             max="20"
+            
         />
     </div>
-    <div id="show-screen" class="mt-6">Show Screen</div>
+<br>
+<div class="grid grid-cols-{{first_hall.col}}">
+    {% for seat in seats %}
+        <input type="text" id="{{seat.id}}" name="{{seat.id}}" value="{{seat.name}}" />
+
+    {% endfor %}
+</div>
+
+
+    
     <!-- Grid preview will appear here -->
     <div id="gridPreview" class="mt-6"></div>
 </div>
@@ -73,7 +73,7 @@
                 input.type = "text";
 
                 // Example: seat_1_1, seat_1_2, seat_2_1
-                input.name = `seat_${row}_${column}`;
+                input.name = `seat`;
 
                 // Initial value, for example A1, A2, B1
                 input.value = `${String.fromCharCode(64 + row)}${column}`;
@@ -96,4 +96,3 @@
     rowInput.addEventListener("input", createGrid);
     columnInput.addEventListener("input", createGrid);
 </script>
-{% endif %}

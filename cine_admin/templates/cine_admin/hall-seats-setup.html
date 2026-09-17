@@ -1,32 +1,354 @@
 {% extends "core/base.html" %}
 
 {% block main_content %}
-<form method="post" >
-   {% csrf_token %}
-<div>
-<label for="cinema">Choose a Cinema:</label>
-<select id="cinema" name="cinema_id" class="text-black"
-   hx-get="{% url 'get_cinema_halls' %}"
-   hx-trigger = "change"
-   hx-include = "this"
-   hx-target = "#hall"
-   hx-swap = "outerHTML"
->
-    {% for cinema in cinemas %}
-       <option value="{{ cinema.id }}">{{ cinema.name }}</option>
-    {% endfor %}
-</select>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- ================= PAGE HEADER ================= -->
+    <div class="mb-8">
+
+        <div class="flex items-center gap-2 mb-3">
+            <span class="h-2 w-2 rounded-full bg-red-500"></span>
+
+            <p class="text-xs font-semibold uppercase tracking-[0.25em] text-red-400">
+                Cinema Management
+            </p>
+        </div>
+
+        <h1 class="text-3xl sm:text-4xl font-bold tracking-tight text-white">
+            Cinema Hall Setup
+        </h1>
+
+        <p class="mt-2 text-sm sm:text-base text-gray-400">
+            Select a cinema, choose a hall, and configure its seating arrangement.
+        </p>
+
+    </div>
+
+
+    <!-- ================= MAIN FORM ================= -->
+    <form method="post">
+
+        {% csrf_token %}
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+
+            <!-- ================= LEFT: CONFIGURATION ================= -->
+            <div class="lg:col-span-4">
+
+                <div class="rounded-2xl border border-gray-800
+                            bg-gray-900/70 shadow-xl shadow-black/10
+                            overflow-hidden">
+
+                    <!-- Card Header -->
+                    <div class="px-6 py-5 border-b border-gray-800">
+
+                        <div class="flex items-center gap-3">
+
+                            <div class="flex h-10 w-10 items-center justify-center
+                                        rounded-xl bg-red-500/10
+                                        border border-red-500/20">
+
+                                <svg class="h-5 w-5 text-red-400"
+                                     fill="none"
+                                     stroke="currentColor"
+                                     viewBox="0 0 24 24">
+
+                                    <path stroke-linecap="round"
+                                          stroke-linejoin="round"
+                                          stroke-width="1.8"
+                                          d="M3 10h18M5 6h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2z"/>
+
+                                </svg>
+
+                            </div>
+
+                            <div>
+                                <h2 class="text-lg font-semibold text-white">
+                                    Hall Configuration
+                                </h2>
+
+                                <p class="text-xs text-gray-500 mt-0.5">
+                                    Select your cinema and hall
+                                </p>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Configuration Fields -->
+                    <div class="p-6">
+
+                        <div class="space-y-5">
+
+                            <!-- Cinema -->
+                            <div>
+
+                                <label for="cinema"
+                                       class="block text-sm font-medium
+                                              text-gray-300 mb-2">
+
+                                    Choose a Cinema
+
+                                </label>
+
+                                <select
+                                    id="cinema"
+                                    name="cinema_id"
+                                    class="w-full rounded-xl border border-gray-700
+                                           bg-gray-950 px-4 py-3
+                                           text-sm text-white
+                                           outline-none transition
+                                           focus:border-red-500
+                                           focus:ring-2 focus:ring-red-500/20"
+
+                                    hx-get="{% url 'get_cinema_halls' %}"
+                                    hx-trigger="change"
+                                    hx-include="this"
+                                    hx-target="#hall"
+                                    hx-swap="outerHTML"
+                                >
+
+                                    {% for cinema in cinemas %}
+
+                                        <option value="{{ cinema.id }}">
+                                            {{ cinema.name }}
+                                        </option>
+
+                                    {% endfor %}
+
+                                </select>
+
+                            </div>
+
+
+                            <!-- Hall -->
+                            <div>
+
+                                <label for="hall"
+                                       class="block text-sm font-medium
+                                              text-gray-300 mb-2">
+
+                                    Choose a Hall
+
+                                </label>
+
+                                <div class="relative">
+
+                                    {% include "cine_admin/hall-select-partial.html" %}
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- Information Box -->
+                            <div class="rounded-xl border border-gray-800
+                                        bg-gray-950/70 p-4">
+
+                                <div class="flex gap-3">
+
+                                    <svg class="h-5 w-5 shrink-0 text-gray-500 mt-0.5"
+                                         fill="none"
+                                         stroke="currentColor"
+                                         viewBox="0 0 24 24">
+
+                                        <path stroke-linecap="round"
+                                              stroke-linejoin="round"
+                                              stroke-width="1.8"
+                                              d="M13 16h-1v-4h-1m1-8a9 9 0 100 18 9 9 0 000-18z"/>
+
+                                    </svg>
+
+                                    <div>
+
+                                        <p class="text-sm font-medium text-gray-300">
+                                            Setup instructions
+                                        </p>
+
+                                        <p class="mt-1 text-xs leading-5 text-gray-500">
+                                            Select a cinema first. The available halls
+                                            will load automatically. Then configure
+                                            the seats for your selected hall.
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= RIGHT: SEAT SETUP ================= -->
+            <div class="lg:col-span-8">
+
+                <div class="rounded-2xl border border-gray-800
+                            bg-gray-900/70 shadow-xl shadow-black/10
+                            overflow-hidden">
+
+                    <!-- Card Header -->
+                    <div class="px-6 py-5 border-b border-gray-800">
+
+                        <div class="flex flex-col sm:flex-row
+                                    sm:items-center sm:justify-between gap-4">
+
+                            <div>
+
+                                <h2 class="text-lg font-semibold text-white">
+                                    Seat Layout
+                                </h2>
+
+                                <p class="text-xs text-gray-500 mt-1">
+                                    Configure the seating arrangement of your hall
+                                </p>
+
+                            </div>
+
+                            <div class="flex items-center gap-2 text-xs text-gray-500">
+
+                                <span class="h-2 w-2 rounded-full bg-green-400"></span>
+
+                                Editable seats
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Seat Preview Area -->
+                    <div class="p-4 sm:p-6">
+
+                        <!-- Screen -->
+                        <div class="mb-10">
+
+                            <div class="mx-auto max-w-md">
+
+                                <div class="h-1 rounded-full
+                                            bg-gradient-to-r from-transparent
+                                            via-red-500 to-transparent">
+                                </div>
+
+                                <div class="mt-3 text-center">
+
+                                    <p class="text-[10px] font-semibold
+                                              uppercase tracking-[0.35em]
+                                              text-gray-500">
+
+                                        Screen
+
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Existing Seat Partial -->
+                        <div class="text-black">
+
+                            {% include "cine_admin/seats-setup-partial.html" %}
+
+                        </div>
+
+
+                        <!-- Legend -->
+                        <div class="mt-8 flex flex-wrap items-center
+                                    justify-center gap-x-6 gap-y-3
+                                    border-t border-gray-800 pt-5">
+
+                            <div class="flex items-center gap-2">
+
+                                <span class="h-3 w-3 rounded-md
+                                             border border-gray-600
+                                             bg-gray-950">
+                                </span>
+
+                                <span class="text-xs text-gray-500">
+                                    Seat input
+                                </span>
+
+                            </div>
+
+                            <div class="flex items-center gap-2">
+
+                                <span class="h-3 w-3 rounded-md
+                                             bg-red-500/20
+                                             border border-red-500/40">
+                                </span>
+
+                                <span class="text-xs text-gray-500">
+                                    Focused seat
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Footer -->
+                    <div class="flex flex-col-reverse sm:flex-row
+                                sm:items-center sm:justify-between gap-4
+                                border-t border-gray-800
+                                bg-gray-950/30 px-6 py-5">
+
+                        <p class="text-xs text-gray-500">
+                            Make sure every seat has a unique name.
+                        </p>
+
+                        <button
+                            type="submit"
+                            class="inline-flex items-center justify-center
+                                   gap-2 rounded-xl bg-red-600
+                                   px-5 py-3 text-sm font-semibold
+                                   text-white transition
+                                   hover:bg-red-500
+                                   active:scale-[0.98]
+                                   focus:outline-none
+                                   focus:ring-2 focus:ring-red-500/40">
+
+                            <svg class="h-4 w-4"
+                                 fill="none"
+                                 stroke="currentColor"
+                                 viewBox="0 0 24 24">
+
+                                <path stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      stroke-width="2"
+                                      d="M5 13l4 4L19 7"/>
+
+                            </svg>
+
+                            Save Seat Layout
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </form>
+
 </div>
 
-<div>
-<label for="hall">Choose a Hall:</label>
-{% include "cine_admin/hall-select-partial.html" %}
-</div>
-
-<div class="text-black">
-{% include "cine_admin/seats-setup-partial.html" %}
-</div>
-
-<button type="submit">Save</button>
-</form>
 {% endblock main_content %}
