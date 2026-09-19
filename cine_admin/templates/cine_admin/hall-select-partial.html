@@ -1,5 +1,6 @@
-<select id="hall" name="hall" class="text-black">
+<select id="hall" name="hall" class="text-black"
+    {% if hall_switch_url %}onchange="window.location.href='{{ hall_switch_url }}?hall_id=' + this.value"{% endif %}>
     {% for hall in halls %}
-       <option value="{{ hall.id }}">{{ hall.name }}</option>
+       <option value="{{ hall.id }}" {% if first_hall and hall.id == first_hall.id %}selected{% endif %}>{{ hall.name }}</option>
     {% endfor %}
 </select>

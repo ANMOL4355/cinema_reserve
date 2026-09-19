@@ -1,7 +1,9 @@
 from django.shortcuts import render,redirect
-from core.models import Cinema,CinemaHall,Seat
+from core.models import Cinema,CinemaHall,Seat,Movie,Show
 from django.http import HttpResponse
 from django.template.loader import render_to_string
+from datetime import datetime
+from django.utils import timezone
 
 
 
@@ -83,3 +85,96 @@ def hall_seat_setup(request):
     }
 
     return render(request, "cine_admin/hall-seats-setup.html", context)
+
+
+
+
+def show_setup(request):
+
+    if request.method == "POST":
+        post_data = request.POST
+        hall_id = post_data.get('hall')
+        movie_id = post_data.get('movie')
+        show_date = post_data.get('show_date')
+        price = post_data.get('price') or 0
+        timeslots = post_data.getlist('timeslot')
+
+        created_count = 0
+        skipped_count = 0
+
+        for time_str in timeslots:
+            if not time_str:
+                continue
+
+            show_time = datetime.strptime(f"{show_date} {time_str}", "%Y-%m-%d %H:%M")
+
+            show, created = Show.objects.get_or_create(
+                movie_id=movie_id,
+                cinemahall_id=hall_id,
+                show_time=show_time,
+                defaults={'price': int(price)},
+            )
+            if created:
+                created_count += 1
+            else:
+                skipped_count += 1
+
+        return redirect(f"/cine_admin/show/setup/?hall_id={hall_id}")
+
+    cinemas = Cinema.objects.all()
+    movies = Movie.objects.all()
+
+    hall_id = request.GET.get("hall_id")
+    if hall_id:
+        first_hall = CinemaHall.objects.filter(pk=hall_id).first()
+    else:
+        first_hall = None
+
+    if first_hall:
+        first_cinema = first_hall.cinema
+    else:
+        first_cinema = cinemas.first()
+        first_hall = CinemaHall.objects.filter(cinema=first_cinema).first()
+
+    halls = CinemaHall.objects.filter(cinema=first_cinema)
+
+    shows = (
+        Show.objects.filter(cinemahall=first_hall)
+        .select_related("movie", "cinemahall")
+        .order_by("show_time")
+    )
+
+    # attach a couple of extra display-only values to each show
+    for show in shows:
+        hall = show.cinemahall
+        show.total_seats = (hall.row or 0) * (hall.col or 0)
+        show.booked_seats = show.reservations.filter(status__in=["pd", "cm"]).count()
+
+    context = {
+        'cinemas': cinemas,
+        'movies': movies,
+        'halls': halls,
+        'first_cinema': first_cinema,
+        'first_hall': first_hall,
+        'shows': shows,
+    }
+
+    return render(request, "cine_admin/show-setup.html", context)
+
+
+
+
+def dashboard(request):
+    context = {
+        'cinema_count': Cinema.objects.count(),
+        'hall_count': CinemaHall.objects.count(),
+        'movie_count': Movie.objects.count(),
+        'show_count': Show.objects.count(),
+        'upcoming_shows': (
+            Show.objects
+            .select_related('movie', 'cinemahall')
+            .filter(show_time__gte=timezone.now())
+            .order_by('show_time')[:8]
+        ),
+    }
+    return render(request, "cine_admin/dashboard.html", context)

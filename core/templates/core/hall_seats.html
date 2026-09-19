@@ -118,8 +118,7 @@
 
 
                 <!-- Create a new row after every 5 seats -->
-                {% if forloop.counter|divisibleby:5 and not forloop.last %}
-
+                {% if forloop.counter|divisibleby:seats_per_row and not forloop.last %}
                     </div>
 
                     <div class="flex items-center gap-3">

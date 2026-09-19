@@ -1,0 +1,166 @@
+{% extends "core/base.html" %}
+
+{% block main_content %}
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+{% include "cine_admin/hall-select-partial.html" with hall_switch_url=request.path %}
+    <div class="mb-8">
+        <div class="flex items-center gap-2 mb-3">
+            <span class="h-2 w-2 rounded-full bg-red-500"></span>
+            <p class="text-xs font-semibold uppercase tracking-[0.25em] text-red-400">
+                Cinema Management
+            </p>
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-bold tracking-tight text-white">Show Setup</h1>
+        <p class="mt-2 text-sm sm:text-base text-gray-400">
+            Schedule shows for a hall and review what's already booked.
+        </p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- ============ LEFT: FORM ============ -->
+        <div class="lg:col-span-5">
+            <div class="rounded-2xl border border-gray-800 bg-gray-900/70 p-6">
+
+                <h2 class="text-lg font-semibold text-white mb-4">Create Shows</h2>
+
+                <form method="post" class="space-y-5 text-white">
+                    {% csrf_token %}
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Cinema</label>
+                        <select
+                            name="cinema_id"
+                            class="w-full rounded-xl border border-gray-700 bg-gray-950 px-4 py-3 text-sm text-white"
+                            hx-get="{% url 'get_cinema_halls' %}"
+                            hx-trigger="change"
+                            hx-include="this"
+                            hx-target="#hall"
+                            hx-swap="outerHTML"
+                        >
+                            {% for cinema in cinemas %}
+                                <option value="{{ cinema.id }}" {% if cinema.id == first_cinema.id %}selected{% endif %}>
+                                    {{ cinema.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Hall</label>
+                        {% include "cine_admin/hall-select-partial.html" %}
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Movie</label>
+                        <select name="movie" class="w-full rounded-xl border border-gray-700 bg-gray-950 px-4 py-3 text-sm text-white">
+                            {% for movie in movies %}
+                                <option value="{{ movie.id }}">{{ movie.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Show Date</label>
+                        <input type="date" name="show_date" required
+                               class="w-full rounded-xl border border-gray-700 bg-gray-950 px-4 py-3 text-sm text-white" />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Ticket Price</label>
+                        <input type="number" name="price" min="0" required
+                               class="w-full rounded-xl border border-gray-700 bg-gray-950 px-4 py-3 text-sm text-white" />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Timeslots</label>
+
+                        <div id="timeslot-list" class="space-y-2">
+                            <div class="flex gap-2">
+                                <input type="time" name="timeslot" required
+                                       class="rounded-xl border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white" />
+                            </div>
+                        </div>
+
+                        <button type="button" id="add-timeslot"
+                                class="mt-2 text-xs font-medium text-red-400 hover:text-red-300">
+                            + Add another timeslot
+                        </button>
+                    </div>
+
+                    <button type="submit"
+                            class="w-full rounded-xl bg-red-600 px-5 py-3 text-sm font-semibold text-white hover:bg-red-500">
+                        Create Shows
+                    </button>
+
+                </form>
+            </div>
+        </div>
+
+        <!-- ============ RIGHT: SUMMARY ============ -->
+        <div class="lg:col-span-7">
+            <div class="rounded-2xl border border-gray-800 bg-gray-900/70 p-6">
+
+                <h2 class="text-lg font-semibold text-white mb-4">
+                    Shows in {{ first_hall.name }}
+                </h2>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left text-gray-300">
+                        <thead class="text-xs uppercase text-gray-500 border-b border-gray-800">
+                            <tr>
+                                <th class="py-2 pr-4">Date</th>
+                                <th class="py-2 pr-4">Time</th>
+                                <th class="py-2 pr-4">Movie</th>
+                                <th class="py-2 pr-4">Price</th>
+                                <th class="py-2 pr-4">Seats Booked</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for show in shows %}
+                            <tr class="border-b border-gray-800/50">
+                                <td class="py-2 pr-4">{{ show.show_time|date:"M d, Y" }}</td>
+                                <td class="py-2 pr-4">{{ show.show_time|date:"h:i A" }}</td>
+                                <td class="py-2 pr-4">{{ show.movie.name }}</td>
+                                <td class="py-2 pr-4">Rs. {{ show.price }}</td>
+                                <td class="py-2 pr-4">{{ show.booked_seats }} / {{ show.total_seats }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="py-6 text-center text-gray-500">
+                                    No shows scheduled for this hall yet.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    document.getElementById('add-timeslot').addEventListener('click', function () {
+        const list = document.getElementById('timeslot-list');
+        const row = document.createElement('div');
+        row.className = 'flex gap-2';
+        row.innerHTML = `
+            <input type="time" name="timeslot"
+                   class="rounded-xl border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white" />
+            <button type="button" class="remove-timeslot text-gray-500 hover:text-red-400 text-sm px-2">✕</button>
+        `;
+        list.appendChild(row);
+    });
+
+    document.getElementById('timeslot-list').addEventListener('click', function (e) {
+        if (e.target.classList.contains('remove-timeslot')) {
+            e.target.closest('div').remove();
+        }
+    });
+</script>
+
+{% endblock main_content %}
