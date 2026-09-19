@@ -24,52 +24,62 @@ def get_cinema_halls(request):
 
 
 def hall_seat_setup(request):
-    
+
     if request.method == "POST":
-        #print(request.POST)
         post_data = request.POST
         cinema_id = post_data.get('cinema_id')
         hall_id = post_data.get('hall')
         seat_names = post_data.getlist('seat')
-        #print(hall_id,seat_names)
         row = post_data.get('row')
         col = post_data.get('col')
-         
+
         CinemaHall.objects.filter(pk=hall_id).update(
             row=row,
             col=col,
         )
-         
+
         created_count = 0
         for seat in seat_names:
-            seat,created = Seat.objects.get_or_create(
+            seat, created = Seat.objects.get_or_create(
                 name=seat,
-                defaults={
-                    'cinemahall_id':hall_id
-                }
+                cinemahall_id=hall_id,
             )
             if created:
-                created_count+=1
-                
+                created_count += 1
+
+        if seat_names:
+            Seat.objects.filter(cinemahall_id=hall_id).exclude(name__in=seat_names).delete()
+
         print(f"New seats created for hall {hall_id} are {created_count}")
-        
-        return redirect("hall_seat_setup")
-        
+
+        return redirect(f"/cine_admin/hall/setup/?hall_id={hall_id}")
+
     cinemas = Cinema.objects.all()
-    first_cinema = cinemas.first()
+
+    hall_id = request.GET.get("hall_id")
+    if hall_id:
+        first_hall = CinemaHall.objects.filter(pk=hall_id).first()
+    else:
+        first_hall = None
+
+    if first_hall:
+        first_cinema = first_hall.cinema
+    else:
+        first_cinema = cinemas.first()
+        first_hall = CinemaHall.objects.filter(cinema=first_cinema).first()
+
     halls = CinemaHall.objects.filter(cinema=first_cinema)
-    first_hall = halls.first()
     seats = Seat.objects.filter(cinemahall=first_hall)
     seats = sorted(
         seats,
-        key=lambda seat: (seat.name[0],int(seat.name[1:]))
+        key=lambda seat: (seat.name[0], int(seat.name[1:]))
     )
-    
+
     context = {
-        'cinemas':cinemas,
-        'halls':halls,
-        'seats':seats,
-        'first_hall':first_hall,
+        'cinemas': cinemas,
+        'halls': halls,
+        'seats': seats,
+        'first_hall': first_hall,
     }
-    
-    return render(request,"cine_admin/hall-seats-setup.html",context)
+
+    return render(request, "cine_admin/hall-seats-setup.html", context)
