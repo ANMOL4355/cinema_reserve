@@ -17,19 +17,81 @@
     <!-- Navbar -->
     <nav class="bg-gray-900 border-b border-gray-800">
       <div
-        class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between"
-      >
+        class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         <a href="{% url 'back' %}" class="text-2xl font-bold text-red-500">CinemaReserve</a>
 
-        <div class="flex gap-6 text-gray-300">
-          <a href="#" class="hover:text-red-500 transition"> Home </a>
+ <div class="flex items-center gap-6 text-gray-300">
+    <a href="{% url 'back' %}"
+       class="hover:text-red-500 transition">
+        Home
+    </a>
 
-          <a href="#" class="hover:text-red-500 transition"> Movies </a>
+    <a href="{% url 'back' %}"
+       class="hover:text-red-500 transition">
+        Movies
+    </a>
 
-          <a href="{% url 'login' %}" class="hover:text-red-500 transition">
+
+    {% if user.is_authenticated %}
+
+        <!-- Profile -->
+        <a
+            href="{% url 'profile' %}"
+            class="flex items-center justify-center
+                   w-10 h-10 rounded-full
+                   bg-gray-800
+                   border border-gray-700
+                   hover:border-red-500
+                   hover:text-red-500
+                   transition"
+            title="My Profile"
+        >
+
+            {% if user.profile.profile_image %}
+
+                <img
+                    src="{{ user.profile.profile_image.url }}"
+                    alt="Profile"
+                    class="w-full h-full rounded-full object-cover"
+                >
+
+            {% else %}
+
+                <!-- User icon -->
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.8"
+                    stroke="currentColor"
+                    class="w-5 h-5"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M15.75 6a3.75 3.75 0 1 1-7.5 0
+                           3.75 3.75 0 0 1 7.5 0ZM4.5
+                           20.25a8.25 8.25 0 0 1 15 0"
+                    />
+                </svg>
+
+            {% endif %}
+
+        </a>
+
+    {% else %}
+
+        <!-- Login -->
+        <a
+            href="{% url 'login' %}"
+            class="hover:text-red-500 transition"
+        >
             Login
-          </a>
-        </div>
+        </a>
+
+    {% endif %}
+
+  </div>
       </div>
     </nav>
 

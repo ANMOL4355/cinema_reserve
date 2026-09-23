@@ -1,9 +1,34 @@
-from django.shortcuts import render,redirect
-from core.models import Cinema,CinemaHall,Seat,Movie,Show
+from django.shortcuts import render,redirect, get_object_or_404
+from core.models import Cinema,CinemaHall,Seat,Movie,Show,MasterReservation
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from datetime import datetime
 from django.utils import timezone
+
+
+
+def reservation_qr_verification(request):
+   if request.method == 'POST':
+      master_id = request.POST.get('master_id')
+      try:
+         master = get_object_or_404(MasterReservation,pk=master_id)
+      except Exception:
+         return HttpResponse("<h1> Ticket doesn't exist </h1>")
+         
+      context = {
+         'movie_name':master.show.movie.name,
+         'show_time' : master.show.show_time,
+         'seats' : Seat.objects.filter(reservations__in=master.reservations.all())
+      }
+      
+      if master:
+         return render(request,"core/ticket.html",context)
+      else:
+         return HttpResponse("<h1> Ticket doesn't exist </h1>")
+      
+         
+   return render(request,"core/qr_verification.html")
+
 
 
 
@@ -88,7 +113,6 @@ def hall_seat_setup(request):
 
 
 
-
 def show_setup(request):
 
     if request.method == "POST":
@@ -160,7 +184,6 @@ def show_setup(request):
     }
 
     return render(request, "cine_admin/show-setup.html", context)
-
 
 
 

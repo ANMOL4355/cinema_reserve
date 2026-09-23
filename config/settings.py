@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'core',
     'cine_admin',
+    'accounts.apps.AccountsConfig',
 ]
 
 MIDDLEWARE = [
