@@ -179,7 +179,7 @@
                         type="date"
                         name="date_of_birth"
                         id="id_date_of_birth"
-                        value="{{ form.date_of_birth.value|default:'' }}"
+                        value="{{ form.date_of_birth.value|date:'Y-m-d'}}"
                         class="w-full bg-gray-800 border border-gray-700
                                rounded-lg px-4 py-3 text-white
                                focus:outline-none focus:ring-2
