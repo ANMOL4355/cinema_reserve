@@ -18,12 +18,12 @@ class Profile(models.Model):
     
 class EmailOTP(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="email_otps")
-    email = models.EmailField()  # the address this code was sent to
+    email = models.EmailField()  
     code_hash = models.CharField(max_length=64)
     created_at = models.DateTimeField(auto_now_add=True)
     expires_at = models.DateTimeField()
     attempts = models.PositiveSmallIntegerField(default=0)
-    is_used = models.BooleanField(default=False)  # consumed, replaced, or locked out
+    is_used = models.BooleanField(default=False)  
 
     class Meta:
         ordering = ["-created_at"]
