@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify your email</title>
+</head>
+
+<body style="margin:0; padding:0; background-color:#111827; font-family:Arial, Helvetica, sans-serif; color:#f9fafb;">
+
+    <table width="100%" cellpadding="0" cellspacing="0" border="0"
+           style="background-color:#111827; padding:30px 15px;">
+        <tr>
+            <td align="center">
+
+                <table width="100%" cellpadding="0" cellspacing="0" border="0"
+                       style="max-width:600px; background-color:#1f2937; border-radius:16px; overflow:hidden;">
+
+                    <tr>
+                        <td style="background-color:#dc2626; padding:28px 20px; text-align:center;">
+                            <h1 style="margin:0; color:#ffffff; font-size:28px; letter-spacing:1px;">
+                                CinemaReserve
+                            </h1>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="padding:35px 30px; text-align:center;">
+
+                            <h2 style="margin:0 0 12px; color:#ffffff; font-size:22px;">
+                                Verify your email address
+                            </h2>
+
+                            <p style="margin:0 0 24px; color:#d1d5db; font-size:16px; line-height:1.6;">
+                                Enter this code on your profile page to verify your email.
+                            </p>
+
+                            <div style="display:inline-block; background-color:#374151; border-radius:10px;
+                                        padding:16px 28px; font-size:34px; font-weight:bold;
+                                        letter-spacing:10px; color:#ffffff;">
+                                {{ code }}
+                            </div>
+
+                            <p style="margin:24px 0 0; color:#9ca3af; font-size:14px; line-height:1.6;">
+                                This code expires in {{ expiry_minutes }} minutes.<br>
+                                If you didn't request it, you can safely ignore this email.
+                            </p>
+
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="padding:22px 20px; background-color:#111827; text-align:center;">
+                            <p style="margin:0; color:#6b7280; font-size:12px;">
+                                This is an automated email. Please do not reply.
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>
